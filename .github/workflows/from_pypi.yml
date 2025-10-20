@@ -47,24 +47,14 @@ jobs:
       run: |
         .venv\Scripts\activate
 
-    - name: Install dependencies with uv
+    - name: Install nanochat from PyPI
       run: |
         uv pip install transformers>=4.0.0
         uv pip install nanochat
 
-    - name: Add nanochat to PYTHONPATH (Unix)
-      if: runner.os != 'Windows'
+    - name: Install pytest for testing
       run: |
-        echo "PYTHONPATH=$(pwd):$PYTHONPATH" >> $GITHUB_ENV
-
-    - name: Add nanochat to PYTHONPATH (Windows)
-      if: runner.os == 'Windows'
-      run: |
-        echo "PYTHONPATH=$PWD;$env:PYTHONPATH" >> $env:GITHUB_ENV
-
-    - name: Install pytest
-      run: |
-        python -m pip install pytest
+        uv pip install pytest
 
     - name: Run pytest
       run: |

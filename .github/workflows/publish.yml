@@ -31,4 +31,6 @@ jobs:
       - name: Publish to PyPI
         env:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload --username __token__ --password $TWINE_PASSWORD dist/*
+        run: |
+          echo "📦 Publishing package to PyPI..."
+        #   twine upload --username __token__ --password $TWINE_PASSWORD dist/*
