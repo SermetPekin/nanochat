@@ -1,8 +1,15 @@
 [project]
 name = "nanochat"
-version = "0.1.0"
+version = "0.1.2"
 description = "the minimal full-stack ChatGPT clone"
 readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Andrej Karpathy"},
+]
+maintainers = [
+    {name = "Sermet Pekin"},
+]
 requires-python = ">=3.9"
 dependencies = [
     "datasets>=4.0.0",
