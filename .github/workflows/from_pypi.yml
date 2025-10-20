@@ -55,7 +55,7 @@ jobs:
 
     - name: Run pytest
       run: |
-        pytest tests/ --maxfail=5 --disable-warnings
+        uv run pytest tests/ --maxfail=5 --disable-warnings
 
     - name: Cache pip dependencies
       uses: actions/cache@v3
