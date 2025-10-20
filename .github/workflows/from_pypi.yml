@@ -50,15 +50,12 @@ jobs:
     - name: Install nanochat from PyPI
       run: |
         uv pip install transformers>=4.0.0
-        uv pip install nanochat
+        uv pip install nanochat pytest
 
-    - name: Install pytest for testing
-      run: |
-        uv pip install pytest
 
     - name: Run pytest
       run: |
-        python -m pytest tests/ --maxfail=5 --disable-warnings
+        pytest tests/ --maxfail=5 --disable-warnings
 
     - name: Cache pip dependencies
       uses: actions/cache@v3
