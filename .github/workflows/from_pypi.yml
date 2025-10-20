@@ -52,8 +52,14 @@ jobs:
         uv pip install transformers>=4.0.0
         uv pip install nanochat pytest
 
+    - name: Test nanochat import
+      run: |
+        uv run python -c "import nanochat; print('nanochat imported successfully from:', nanochat.__file__)"
+        uv run python -c "import rustbpe; print('rustbpe imported successfully')"
 
-    - name: Run pytest
+    - name: Run pytest (with PYTHONPATH cleared)
+      env:
+        PYTHONPATH: ""
       run: |
         uv run pytest tests/ --maxfail=5 --disable-warnings
 
