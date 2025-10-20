@@ -65,21 +65,21 @@ jobs:
         # Test basic imports
         import nanochat
         import rustbpe
-        print('✅ All modules imported successfully')
+        print('[PASS] All modules imported successfully')
         
         # Test basic functionality
         tokenizer = rustbpe.Tokenizer()
         test_text = 'Hello, world!'
-        print(f'✅ rustbpe tokenizer created and tested with: {test_text}')
+        print(f'[PASS] rustbpe tokenizer created and tested with: {test_text}')
         
         # Test nanochat modules
         from nanochat import common
-        print('✅ nanochat.common imported successfully')
+        print('[PASS] nanochat.common imported successfully')
         
         from nanochat import gpt
-        print('✅ nanochat.gpt imported successfully')
+        print('[PASS] nanochat.gpt imported successfully')
         
-        print('🎉 All PyPI package smoke tests passed!')
+        print('[SUCCESS] All PyPI package smoke tests passed!')
         "
 
     - name: Cache pip dependencies
