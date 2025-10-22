@@ -70,17 +70,20 @@ jobs:
     - name: Set up uv
       run: |
         curl -LsSf https://astral.sh/uv/install.sh | sh
+        source $HOME/.cargo/env
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
     - name: Install dependencies
       run: |
-        ~/.cargo/bin/uv venv
-        ~/.cargo/bin/uv sync
-        ~/.cargo/bin/uv pip install transformers>=4.0.0
+        source $HOME/.cargo/env
+        uv venv
+        uv sync
+        uv pip install transformers>=4.0.0
 
     - name: Test CUDA availability
       run: |
-        ~/.cargo/bin/uv run python -c "
+        source $HOME/.cargo/env
+        uv run python -c "
         import torch
         print(f'PyTorch version: {torch.__version__}')
         print(f'CUDA available: {torch.cuda.is_available()}')
@@ -99,4 +102,5 @@ jobs:
 
     - name: Run CUDA tests
       run: |
-        ~/.cargo/bin/uv run pytest tests/ --maxfail=5 -v 
+        source $HOME/.cargo/env
+        uv run pytest tests/ --maxfail=5 -v 
