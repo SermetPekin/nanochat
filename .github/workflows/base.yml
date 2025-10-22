@@ -59,10 +59,14 @@ jobs:
       fail-fast: false
 
     steps:
-    - name: Install system dependencies
+    - name: Install system dependencies and cleanup
       run: |
         apt-get update
         apt-get install -y git curl
+        # Clean up to free disk space
+        apt-get clean
+        rm -rf /var/lib/apt/lists/*
+        df -h
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -72,12 +76,15 @@ jobs:
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Install dependencies
+    - name: Install dependencies (excluding torch)
       run: |
         export PATH="$HOME/.local/bin:$PATH"
-        uv venv
-        uv sync
-        uv pip install transformers>=4.0.0
+        # Create venv but exclude torch since it's pre-installed in container
+        uv venv --system-site-packages
+        # Install only non-torch dependencies
+        uv pip install transformers>=4.0.0 regex requests pytest
+        # Verify torch is available from system
+        uv run python -c "import torch; print(f'Using container PyTorch: {torch.__version__}')"
 
     - name: Test CUDA availability
       run: |
