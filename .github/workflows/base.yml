@@ -76,32 +76,30 @@ jobs:
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Install dependencies (excluding torch)
+    - name: Install dependencies (minimal for testing)
       run: |
         export PATH="$HOME/.local/bin:$PATH"
         # Create venv with system site packages to access container's PyTorch
         uv venv --system-site-packages
         
-        # Install dependencies manually, excluding torch to avoid disk space issues
-        uv pip install datasets>=4.0.0
-        uv pip install fastapi>=0.117.1
-        uv pip install files-to-prompt>=0.6
-        uv pip install "numpy==1.26.4"
-        uv pip install psutil>=7.1.0
-        uv pip install regex>=2025.9.1
-        uv pip install setuptools>=80.9.0
-        uv pip install tiktoken>=0.11.0
-        uv pip install tokenizers>=0.22.0
-        # Skip torch - use container's version
-        uv pip install uvicorn>=0.36.0
-        uv pip install wandb>=0.21.3
-        uv pip install transformers>=4.0.0
+        # Only install what test_rustbpe.py actually needs
+        uv pip install pytest regex tiktoken
         
-        # Install test dependencies
-        uv pip install pytest requests
+        # Verify torch is available and test dependencies are working
+        uv run python -c "
+        import torch
+        print(f'✓ Container PyTorch: {torch.__version__}')
+        print(f'✓ CUDA available: {torch.cuda.is_available()}')
         
-        # Verify torch is available from container
-        uv run python -c "import torch; print(f'Using container PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
+        import regex
+        print('✓ regex available')
+        
+        import tiktoken  
+        print('✓ tiktoken available')
+        
+        import rustbpe
+        print('✓ rustbpe available')
+        "
 
     - name: Test CUDA availability
       run: |
