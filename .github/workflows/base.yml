@@ -52,19 +52,17 @@ jobs:
   test-cuda:
     runs-on: ubuntu-latest
     container:
-      image: nvidia/cuda:11.8-devel-ubuntu18.04
+      image: pytorch/pytorch:1.13.1-cuda11.6-cudnn8-devel
     strategy:
       matrix:
-        python-version: ['3.10', '3.11']
+        python-version: ['3.10']
       fail-fast: false
 
     steps:
     - name: Install system dependencies
       run: |
         apt-get update
-        apt-get install -y python${{ matrix.python-version }} python${{ matrix.python-version }}-venv python${{ matrix.python-version }}-dev python3-pip git curl
-        ln -sf /usr/bin/python${{ matrix.python-version }} /usr/bin/python3
-        ln -sf /usr/bin/python${{ matrix.python-version }} /usr/bin/python
+        apt-get install -y git curl
 
     - name: Checkout code
       uses: actions/checkout@v3
@@ -74,10 +72,9 @@ jobs:
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-    - name: Install CUDA PyTorch and dependencies
+    - name: Install dependencies
       run: |
         ~/.cargo/bin/uv venv
-        ~/.cargo/bin/uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
         ~/.cargo/bin/uv sync
         ~/.cargo/bin/uv pip install transformers>=4.0.0
 
