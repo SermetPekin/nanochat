@@ -48,3 +48,58 @@ jobs:
     - name: Run pytest
       run: |
         uv run pytest tests/ --maxfail=5 
+
+  test-cuda:
+    runs-on: ubuntu-latest
+    container:
+      image: nvidia/cuda:12.1-devel-ubuntu22.04
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11']
+      fail-fast: false
+
+    steps:
+    - name: Install system dependencies
+      run: |
+        apt-get update
+        apt-get install -y python${{ matrix.python-version }} python${{ matrix.python-version }}-venv python${{ matrix.python-version }}-dev python3-pip git curl
+        ln -sf /usr/bin/python${{ matrix.python-version }} /usr/bin/python3
+        ln -sf /usr/bin/python${{ matrix.python-version }} /usr/bin/python
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+    - name: Install CUDA PyTorch and dependencies
+      run: |
+        ~/.cargo/bin/uv venv
+        ~/.cargo/bin/uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+        ~/.cargo/bin/uv sync
+        ~/.cargo/bin/uv pip install transformers>=4.0.0
+
+    - name: Test CUDA availability
+      run: |
+        ~/.cargo/bin/uv run python -c "
+        import torch
+        print(f'PyTorch version: {torch.__version__}')
+        print(f'CUDA available: {torch.cuda.is_available()}')
+        if torch.cuda.is_available():
+            print(f'CUDA version: {torch.version.cuda}')
+            print(f'GPU count: {torch.cuda.device_count()}')
+            for i in range(torch.cuda.device_count()):
+                print(f'GPU {i}: {torch.cuda.get_device_name(i)}')
+        else:
+            print('No CUDA GPUs detected (expected in GitHub Actions)')
+        "
+
+    - name: Add nanochat to PYTHONPATH
+      run: |
+        echo "PYTHONPATH=$(pwd):$PYTHONPATH" >> $GITHUB_ENV
+
+    - name: Run CUDA tests
+      run: |
+        ~/.cargo/bin/uv run pytest tests/ --maxfail=5 -v 
