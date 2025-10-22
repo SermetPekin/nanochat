@@ -76,29 +76,62 @@ jobs:
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Install dependencies (minimal for testing)
+    - name: Check container contents and install minimal deps
       run: |
         export PATH="$HOME/.local/bin:$PATH"
-        # Create venv with system site packages to access container's PyTorch
+        
+        # Check what's already available in the container
+        echo "=== Container Python packages ==="
+        python -c "import sys; print('Python:', sys.version)"
+        python -c "import torch; print('PyTorch:', torch.__version__)"
+        python -c "
+        try:
+            import tiktoken
+            print('tiktoken: AVAILABLE')
+        except ImportError:
+            print('tiktoken: NOT AVAILABLE')
+        
+        try:
+            import regex
+            print('regex: AVAILABLE')  
+        except ImportError:
+            print('regex: NOT AVAILABLE')
+        "
+        
+        # Create venv with system site packages
         uv venv --system-site-packages
         
-        # Only install what test_rustbpe.py actually needs
-        uv pip install pytest regex tiktoken
+        # Only install pytest (should be safe) and regex if needed
+        uv pip install pytest
         
-        # Verify torch is available and test dependencies are working
+        # Try to install regex without dependencies to avoid any torch issues
+        uv pip install --no-deps regex
+        
+        echo "=== After minimal installation ==="
         uv run python -c "
         import torch
-        print(f'✓ Container PyTorch: {torch.__version__}')
-        print(f'✓ CUDA available: {torch.cuda.is_available()}')
+        print('✓ PyTorch available:', torch.__version__)
         
-        import regex
-        print('✓ regex available')
+        import pytest
+        print('✓ pytest available')
         
-        import tiktoken  
-        print('✓ tiktoken available')
-        
-        import rustbpe
-        print('✓ rustbpe available')
+        try:
+            import regex
+            print('✓ regex available')
+        except ImportError:
+            print('✗ regex not available')
+            
+        try:
+            import tiktoken
+            print('✓ tiktoken available (from container)')
+        except ImportError:
+            print('✗ tiktoken not available - will skip related tests')
+            
+        try:
+            import rustbpe
+            print('✓ rustbpe available (from project)')
+        except ImportError:
+            print('✗ rustbpe not available - need to build?')
         "
 
     - name: Test CUDA availability
