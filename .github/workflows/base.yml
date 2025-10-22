@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - gh-wf-v3
+      - gh-wf-v3-local
   pull_request:
     branches:
       - master
