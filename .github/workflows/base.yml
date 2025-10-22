@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - gh-wf-v3
       - gh-wf-v3-local
   pull_request:
     branches:
@@ -53,7 +52,7 @@ jobs:
   test-cuda:
     runs-on: ubuntu-latest
     container:
-      image: nvidia/cuda:12.1-devel-ubuntu22.04
+      image: nvidia/cuda:12.1-devel-ubuntu20.04
     strategy:
       matrix:
         python-version: ['3.10', '3.11']
