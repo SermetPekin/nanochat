@@ -79,12 +79,29 @@ jobs:
     - name: Install dependencies (excluding torch)
       run: |
         export PATH="$HOME/.local/bin:$PATH"
-        # Create venv but exclude torch since it's pre-installed in container
+        # Create venv with system site packages to access container's PyTorch
         uv venv --system-site-packages
-        # Install only non-torch dependencies
-        uv pip install transformers>=4.0.0 regex requests pytest
-        # Verify torch is available from system
-        uv run python -c "import torch; print(f'Using container PyTorch: {torch.__version__}')"
+        
+        # Install dependencies manually, excluding torch to avoid disk space issues
+        uv pip install datasets>=4.0.0
+        uv pip install fastapi>=0.117.1
+        uv pip install files-to-prompt>=0.6
+        uv pip install "numpy==1.26.4"
+        uv pip install psutil>=7.1.0
+        uv pip install regex>=2025.9.1
+        uv pip install setuptools>=80.9.0
+        uv pip install tiktoken>=0.11.0
+        uv pip install tokenizers>=0.22.0
+        # Skip torch - use container's version
+        uv pip install uvicorn>=0.36.0
+        uv pip install wandb>=0.21.3
+        uv pip install transformers>=4.0.0
+        
+        # Install test dependencies
+        uv pip install pytest requests
+        
+        # Verify torch is available from container
+        uv run python -c "import torch; print(f'Using container PyTorch: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')"
 
     - name: Test CUDA availability
       run: |
