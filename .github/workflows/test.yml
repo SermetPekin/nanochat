@@ -53,11 +53,14 @@ jobs:
         # Step 5: Show nanochat package info
         uv pip show nanochat
         
-        # Step 6: Test from different directory
+        # Step 6: Test from different directory (with proper activation)
         cd ~
+        . "$GITHUB_WORKSPACE/.venv/bin/activate"
         python -c "import nanochat; print('✅ nanochat imported from home directory!')"
         
         # Step 7: Comprehensive functionality test
+        cd "$GITHUB_WORKSPACE"
+        . .venv/bin/activate
         python -c "
         import rustbpe
         import nanochat
