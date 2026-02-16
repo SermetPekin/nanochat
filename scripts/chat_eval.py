@@ -1,6 +1,6 @@
 """
 Evaluate the Chat model.
-All the generic code lives here, and all the evlauation-specific
+All the generic code lives here, and all the evaluation-specific
 code lives in nanochat directory and is imported from here.
 
 Example runs:
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     # Parse command-line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--source', type=str, required=True, help="Source of the model: sft|mid|rl")
+    parser.add_argument('-i', '--source', type=str, required=True, help="Source of the model: sft|rl")
     parser.add_argument('-a', '--task-name', type=str, default=None, help="Task name. Default = all tasks. Use | to split multiple tasks.")
     parser.add_argument('-d', '--dtype', type=str, default='bfloat16', choices=['float32', 'bfloat16'])
     parser.add_argument('-t', '--temperature', type=float, default=0.0)
