@@ -31,7 +31,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         uv sync --extra cpu
-        uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+        # uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
     # macOS: Standard sync 
     - name: Install dependencies (macOS)
