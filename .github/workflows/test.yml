@@ -47,5 +47,6 @@ jobs:
     - name: Run pytest
       run: |
         # uv run pytest tests/
-        .venv/bin/pytest tests/
+        # .venv/bin/pytest tests/
+        uv run --extra cpu pytest tests/
          
